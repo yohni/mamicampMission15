@@ -17,8 +17,8 @@
       </p>
     </div>
 
-    <div class="last-thread">
-    </div>
+    <!-- <div class="last-thread">
+    </div> -->
   </div>
 </template>
 
