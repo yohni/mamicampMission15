@@ -5,24 +5,41 @@ import sourceData from '@/data'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  state: sourceData,
+  state: {
+    ...sourceData,
+    authId: 'ALXhxjwgY9PinwNGHpfai6OWyDu2'
+  },
+
+  getters: {
+    authUser (state) {
+      return state.users[state.authId]
+    }
+  },
 
   actions: {
-    createPost (context, post) {
+    createPost ({state, commit}, post) {
       const postId = 'greatPost' + Math.random()
       post['.key'] = postId
+      post.userId = state.authId
+      post.publishedAt = Math.floor(Date.now() / 1000)
       // addNewPost
-      context.commit('setPost', {post, postId})
+      commit('setPost', {post, postId})
       // appendToThread
-      context.commit('appendPostToThread', {threadId: post.threadId, postId})
+      commit('appendPostToThread', {threadId: post.threadId, postId})
       // appendToUser
-      context.commit('appendPostToUser', {userId: post.userId, postId})
+      commit('appendPostToUser', {userId: post.userId, postId})
+    },
+    createUser ({commit}, user) {
+      commit('setUser', {userId: user['.key'], user})
     }
   },
 
   mutations: {
     setPost (state, {post, postId}) {
       Vue.set(state.posts, postId, post)
+    },
+    setUser (state, {user, userId}) {
+      Vue.set(state.users, userId, user)
     },
     appendPostToThread (state, {postId, threadId}) {
       const thread = state.threads[threadId]
