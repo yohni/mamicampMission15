@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "eslint": "^5.16.0",
+    "firebase": "^7.14.5",
     "moment": "^2.26.0",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
