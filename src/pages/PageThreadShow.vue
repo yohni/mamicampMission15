@@ -1,5 +1,5 @@
 <template>
-  <div class='col-large push-top'>
+  <div v-if="thread && user" class='col-large push-top'>
     <h1>{{thread.title}}</h1>
     <router-link 
       class="btn-green btn-small"
@@ -18,8 +18,10 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex'
 import PostList from '@/components/PostList'
 import PostEditor from '@/components/PostEditor'
+import {countObjectProperties} from '@/utils'
 export default {
   props: {
     id: {
@@ -52,12 +54,28 @@ export default {
       return this.$store.getters.threadRepliesCount(this.thread['.key'])
     },
     contributorCount () {
-      const replies = Object.keys(this.thread.posts)
-        .filter(postId => postId !== this.thread.firstPostId)
-        .map(postId => this.$store.state.posts[postId])
-      const userIds = replies.map(post => post.userId)
-      return userIds.filter((item, index) => index === userIds.indexOf(item)).length
+      return countObjectProperties(this.thread.contributors)
     }
+  },
+  methods: {
+    ...mapActions(['fetchThread', 'fetchUser', 'fetchPosts'])
+  },
+  created () {
+    // fetch thread
+    this.fetchThread({id: this.id})
+      .then(thread => {
+        // fetch user
+        this.fetchUser({id: thread.userId})
+
+        // fetch post
+        this.fetchPosts({ids: Object.keys(thread.posts)})
+          .then(posts => {
+            posts.forEach(post => {
+              // fetch user
+              this.fetchUser({id: post.userId})
+            })
+          })
+      })
   }
 }
 </script>
