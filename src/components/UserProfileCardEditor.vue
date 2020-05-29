@@ -71,6 +71,7 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex'
 export default {
   props: {
     user: {
@@ -94,8 +95,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['createUser']),
     save () {
-      this.$store.dispatch('createUser', {...this.activeUser})
+      this.createUser({...this.activeUser})
       this.$router.push({name: 'Profile'})
     },
     cancel () {
