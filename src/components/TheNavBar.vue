@@ -12,7 +12,7 @@
     </div>
 
     <!-- use .navbar-open to open nav -->
-    <nav class="navbar">
+    <nav v-if="user" class="navbar">
       <ul>
         <li class="navbar-user">
           <router-link :to="{name: 'Profile'}">
