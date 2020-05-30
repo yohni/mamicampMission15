@@ -12,10 +12,10 @@
     </div>
 
     <!-- use .navbar-open to open nav -->
-    <nav v-if="user" class="navbar">
-      <ul>
+    <nav class="navbar">
+      <ul v-if="user">
         <li class="navbar-user">
-          <router-link :to="{name: 'Profile'}">
+          <a @click.prevent="userDropDown = !userDropDown">
             <img
               class="avatar-small"
               :src="user.avatar"
@@ -25,45 +25,41 @@
               {{user.name}}
               <img class="icon-profile" src="@/assets/img/arrow-profile.svg" alt />
             </span>
-          </router-link>
+          </a>
 
           <!-- dropdown menu -->
           <!-- add class "active-drop" to show the dropdown -->
-          <div id="user-dropdown">
+          <div id="user-dropdown" :class="{'active-drop' : userDropDown}">
             <div class="triangle-drop"></div>
             <ul class="dropdown-menu">
               <li class="dropdown-menu-item">
                 <router-link :to="{name: 'Profile'}">View profile</router-link>
               </li>
               <li class="dropdown-menu-item">
-                <a href="#">Log out</a>
+                 <a @click.prevent="$store.dispatch('signOut')">Logout</a>
               </li>
             </ul>
           </div>
         </li>
+      
       </ul>
-
-      <ul>
+      <ul v-else>
         <li class="navbar-item">
-          <a href="index.html">Home</a>
+          <router-link :to="{name: 'Login'}">Login</router-link>
+          
         </li>
         <li class="navbar-item">
-          <a href="category.html">Category</a>
+          <router-link :to="{name: 'Register'}">Register</router-link>
         </li>
-        <li class="navbar-item">
-          <a href="forum.html">Forum</a>
-        </li>
-        <li class="navbar-item">
-          <a href="thread.html">Thread</a>
-        </li>
-        <!-- Show these option only on mobile-->
+      </ul>
+      <!-- <ul v-else>
         <li class="navbar-item mobile-only">
           <a href="profile.html">My Profile</a>
         </li>
         <li class="navbar-item mobile-only">
           <a href="#">Logout</a>
         </li>
-      </ul>
+      </ul> -->
     </nav>
   </header>
 </template>
@@ -75,6 +71,11 @@ export default {
     ...mapGetters({
       'user': 'authUser'
     })
+  },
+  data () {
+    return {
+      userDropDown: false
+    }
   }
 }
 </script>
