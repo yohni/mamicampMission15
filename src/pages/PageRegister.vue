@@ -57,7 +57,8 @@ export default {
   },
   methods: {
     registerUser () {
-      console.log(this.form)
+      this.$store.dispatch('registerUserWithEmailAndPassword', this.form)
+        .then(() => this.$router.push('/'))
     }
   },
   created () {
