@@ -21,9 +21,7 @@ export default {
         return Promise.resolve(state.posts[postId])
       })
   },
-  createUser ({commit}, user) {
-    commit('setUser', {userId: user['.key'], user})
-  },
+
   createThread ({commit, state, dispatch}, {title, text, forumId}) {
     return new Promise((resolve, reject) => {
       const threadId = firebase.database().ref('threads').push().key
@@ -53,6 +51,38 @@ export default {
           commit('appendPostToUser', {parentId: post.userId, childId: postId})
 
           resolve(state.threads[threadId])
+        })
+    })
+  },
+
+  registerUserWithEmailAndPassword ({dispatch}, {name, username, email, password, avatar = null}) {
+    return firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then(user => {
+        return dispatch('createUser', {id: user.user.uid, email, name, username, password, avatar})
+      })
+  },
+
+  signInWithEmailAndPassword (context, {email, password}) {
+    return firebase.auth().signInWithEmailAndPassword(email, password)
+  },
+
+  signOut ({commit}) {
+    return firebase.auth().signOut()
+      .then(() => {
+        commit('setAuthId', null)
+      })
+  },
+
+  createUser ({state, commit}, {id, name, username, email, avatar = null}) {
+    return new Promise((resolve, reject) => {
+      const registerAt = Math.floor(Date.now() / 1000)
+      const usernameLower = username.toLowerCase()
+      email = email.toLowerCase()
+      const user = {name, username, usernameLower, email, avatar, registerAt}
+      firebase.database().ref('users').child(id).set(user)
+        .then(() => {
+          commit('setItem', {resource: 'users', id: id, item: user})
+          resolve(state.users[id])
         })
     })
   },
@@ -99,6 +129,18 @@ export default {
           resolve(post)
         })
     })
+  },
+
+  updateUser ({commit}, user) {
+    commit('setUser', {userId: user['.key'], user})
+  },
+
+  fetchAuthUser ({dispatch, commit}) {
+    const userId = firebase.auth().currentUser.uid
+    return dispatch('fetchUser', {id: userId})
+      .then(() => {
+        commit('setAuthId', userId)
+      })
   },
 
   fetchCategory: ({dispatch}, {id}) => dispatch('fetchItem', {resource: 'categories', id, emoji: '😱'}),
