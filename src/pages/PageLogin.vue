@@ -24,7 +24,7 @@
         </form>
 
         <div class="push-top text-center">
-            <button class="btn-red btn-xsmall"><i class="fa fa-google fa-btn"></i>Sign in with Google</button>
+            <button @click.prevent="googleLogin" class="btn-red btn-xsmall"><i class="fa fa-google fa-btn"></i>Sign in with Google</button>
         </div>
     </div>
   </div>
@@ -45,11 +45,18 @@ export default {
       this.$store.dispatch('signInWithEmailAndPassword', {
         email: this.form.email,
         password: this.form.password
-      }).then(() => {
-        this.$router.push('/')
-      }).catch(err => {
-        alert('🙅‍' + err.message)
       })
+        .then(() => { this.successRedirect() })
+        .catch(err => { alert('🙅‍' + err.message) })
+    },
+    googleLogin () {
+      this.$store.dispatch('signInWithGoogle')
+        .then(() => { this.successRedirect() })
+        .catch(err => { alert('🙅‍' + err.message) })
+    },
+    successRedirect () {
+      const redirectTo = this.$route.query.redirectTo || {name: 'Home'}
+      this.$router.push(redirectTo)
     }
   },
   created () {
