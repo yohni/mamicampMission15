@@ -26,6 +26,7 @@ import PostList from '@/components/PostList'
 import UserProfileCard from '@/components/UserProfileCard'
 import UserProfileCardEditor from '@/components/UserProfileCardEditor'
 import {mapGetters} from 'vuex'
+import asyncDataStatus from '@/mixins/asyncDataStatus'
 export default {
   props: {
     editProfile: {
@@ -33,6 +34,7 @@ export default {
       type: Boolean
     }
   },
+  mixins: [asyncDataStatus],
   components: {
     PostList,
     UserProfileCard,
@@ -43,15 +45,12 @@ export default {
       user: 'authUser'
     }),
     userPosts () {
-      if (this.user.posts) {
-        return Object.values(this.$store.state.posts)
-          .filter(post => post.userId === this.user['.key'])
-      }
-      return []
+      return this.$store.getters.userPosts(this.user['.key'])
     }
   },
   created () {
-    this.$emit('ready')
+    this.$store.dispatch('fetchPosts', {ids: this.user.posts})
+      .then(() => { this.asyncDataStatus_fetched() })
   }
 }
 </script>
