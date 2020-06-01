@@ -87,15 +87,15 @@ export default {
   computed: {
     userThreadCount () {
       return this.user.threads
-        ? this.$store.getters.userThreadsCount(this.user['.key'])
+        ? this.$store.getters['users/userThreadsCount'](this.user['.key'])
         : 0
     },
     userPostCount () {
-      return this.$store.getters.userPostsCount(this.user['.key'])
+      return this.$store.getters['users/userPostsCount'](this.user['.key'])
     }
   },
   methods: {
-    ...mapActions(['updateUser']),
+    ...mapActions('users', ['updateUser']),
     save () {
       this.updateUser({...this.activeUser})
       this.$router.push({name: 'Profile'})

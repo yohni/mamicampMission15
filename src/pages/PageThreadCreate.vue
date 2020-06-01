@@ -35,14 +35,15 @@ export default {
   mixins: [asyncDataStatus],
   computed: {
     forum () {
-      return this.$store.state.forums[this.forumId]
+      return this.$store.state.forums.items[this.forumId]
     },
     hasUnsavedChanges () {
       return (this.$refs.editor.form.title || this.$refs.editor.form.text) && !this.saved
     }
   },
   methods: {
-    ...mapActions(['createThread', 'fetchForum']),
+    ...mapActions('threads', ['createThread']),
+    ...mapActions('forums', ['fetchForum']),
 
     save ({text, title}) {
       this.createThread({
