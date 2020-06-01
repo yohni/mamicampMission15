@@ -8,6 +8,7 @@
     <ThreadEditor
       :title="thread.title"
       :text="text"
+      ref="editor"
       @save="save"
       @cancel="cancel" 
     />
@@ -28,6 +29,11 @@ export default {
       type: String
     }
   },
+  data () {
+    return {
+      saved: false
+    }
+  },
   mixins: [asyncDataStatus],
   computed: {
     thread () {
@@ -36,6 +42,9 @@ export default {
     text () {
       const post = this.$store.state.posts[this.thread.firstPostId]
       return post ? post.text : null
+    },
+    hasUnsavedChanges () {
+      return (this.$refs.editor.form.title || this.$refs.editor.form.text) && !this.saved
     }
   },
   methods: {
@@ -45,6 +54,7 @@ export default {
         id: this.id,
         title,
         text }).then(thread => {
+        this.saved = true
         this.$router.push({name: 'ThreadShow', params: {id: this.id}})
       })
     },
@@ -56,6 +66,18 @@ export default {
     this.fetchThread({id: this.id})
       .then(thread => this.fetchPost({id: thread.firstPostId}))
       .then(() => { this.asyncDataStatus_fetched() })
+  },
+  beforeRouteLeave (to, from, next) {
+    if (this.hasUnsavedChanges) {
+      const confirmed = window.confirm('Are you sure you want to leave? Unsaved change will be lost.')
+      if (confirmed) {
+        next()
+      } else {
+        next(false)
+      }
+    } else {
+      next()
+    }
   }
 }
 </script>
