@@ -6,6 +6,9 @@ import App from './App'
 import router from './router'
 import store from '@/store'
 import AppDate from '@/components/AppDate'
+import Vuelidate from 'vuelidate'
+
+Vue.use(Vuelidate)
 
 Vue.component('AppDate', AppDate)
 
