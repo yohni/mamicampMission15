@@ -7,7 +7,12 @@
         cols="30" 
         rows="10" 
         class="form-input" 
+        @blur="$v.text.$touch()"
         v-model="text"></textarea>
+      <template v-if="$v.text.$error">
+        <span v-if="!$v.text.required" class="form-error">This field is required</span>
+        <span v-else-if="!$v.text.minLength" class="form-error">Minimum 10 characters</span>
+      </template>
     </div>
     <div class="form-actions">
       <button v-if="isUpdate" @click="cancel" class="btn btn-ghost">Cancel</button>
@@ -18,6 +23,7 @@
 
 <script>
 import {mapActions} from 'vuex'
+import {required, minLength} from 'vuelidate/lib/validators'
 export default {
   props: {
     threadId: {
@@ -30,6 +36,12 @@ export default {
   data () {
     return {
       text: this.post ? this.post.text : ''
+    }
+  },
+  validations: {
+    text: {
+      required,
+      minLength: minLength(10)
     }
   },
   computed: {
